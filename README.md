@@ -1,76 +1,71 @@
-# Project Overview: 
+# **Kubernetes App Deployment with Private Image**
 
-Build the app's container image with Dockerfile, push it to private repository,  
-test applicatoin on local environment using docker-compose.yaml,   
-and then deploy application to local Kubernetes and pass the requirements
+## **Project Overview**
+This project demonstrates a complete end-to-end deployment process of a 3-tier application using Docker and Kubernetes. The steps include building a Docker image, pushing it to a private Docker registry, testing the application locally with Docker Compose, and finally deploying it to a local Kubernetes cluster using Minikube.
 
-## Application Description
-The application deployed in 3-tier layers:
-- Presentation layer: Kubernetes NGINX Ingress
-- Application layer: Flask application based on Docker image in Kubernetes pods
-- Data layer: MongoDB based on Docker image in Kubernetes pods
+## **Application Architecture**
+The application is deployed in a 3-tier architecture consisting of the following layers:
 
-### Steps
+- **Presentation Layer**: Managed by Kubernetes NGINX Ingress for traffic routing.
+- **Application Layer**: A Flask web application deployed in Kubernetes pods using a custom Docker image.
+- **Data Layer**: A MongoDB database deployed in Kubernetes pods, also using a Docker image.
 
-#### 1. Build Docker image and publish it to private Docker registry ( Docker-Hub )
-![Docker Hub](img/docker-hub.png)
+## **Deployment Steps**
 
+### **1. Build Docker Image and Publish to Private Docker Registry**
+   - The application's source code is located in the `/application` directory.
+   - The Docker image is built from the source code with no Dockerfile linter errors or warnings.
+   - The built image is published to a private Docker registry on Docker Hub.
 
-  - Application source code is placed in /application directory
-  - No Haskell Dockerfile linter errors or warnings
+   ![Docker Hub](img/docker-hub.png)
 
+### **2. Local Deployment using Docker Compose**
+   - A `docker-compose.yaml` file is created to deploy the application locally.
+   - The application is accessible via a web browser, and data can be written to MongoDB through the **Test DB Connectivity** page.
 
-#### 2. Create docker-compose.yaml and deploy locally application
-![Docker Compose Application](img/docker-compose-app.png)
+   ![Docker Compose Application](img/docker-compose-app.png)
 
-  - the application is deployed (we can open it in browser)
-  - data can be written to MongoDB on *Test DB Connectivity* page
+### **3. Prepare Kubernetes Manifests and Deploy to Local Minikube Cluster**
+   - Kubernetes manifests (`manifest.yml`) are created to deploy the application to a local Minikube Kubernetes cluster.
+   - The deployment follows specific requirements for each layer, including configuration of Secrets, ConfigMaps, Deployments, Services, StatefulSets, and Ingress.
 
-#### 3. Preparing Kubernetes manifest **manifest.yml** and deploy it to *local minikube* Kubernetes
-![Kubernetes Application](img/k8s-deployment.png)
+   ![Kubernetes Application](img/k8s-deployment.png)
 
+#### **Key Kubernetes Manifest Requirements:**
 
-  ##### Kubernetes manifest requirements:
+- **Application Layer**:
+  - Deploy using **Deployment** and **Service**.
+  - Configure Kubernetes secret for Docker credentials.
+  - Set deployment parameters:
+    - **Name**: `application`
+    - **Replicas**: 1
+    - **Ports**: Service port 80, Container port 5000
+    - **Probes**: Liveness at `/healthz`, Readiness at `/healthx`
+    - **Resources**: CPU limit 0.5, request 0.2; Memory limit 128Mi, request 64Mi
+    - Include an init container to wait until MongoDB is available.
 
-- Deploy application layer (custom Docker image) based on *Deployment* and *Service*:
-    - Docker credentials have been gotten from Kubernetes secret
-    - Deployment name is *application*
-    - Deployment label is *application*
-    - Container name is *application*
-    - Service name is *application*
-    - Service port is *80*
-    - Container port is *5000*
-    - The number of replicas is *1*
-    - Add liveness/readiness probe: liveness probe to path /healthz, readiness probe to path /healthx
-    - Deploy strategy "Recreate"
-    - Run application with next resources: CPU: limit-0.5 request-0.2, Memory: limit-128Mi request-64Mi
-    - The deployment variables were obtained from the Kubernetes configmap *application*
-    - Add init container to deployment of app: wait until the mongo is available and running
-- Deploy data layer:
-    - StatefullSet name is *mongo*
-    - StatefullSet label is *mongo*
-    - Container name is *mongo*
-    - The number of replicas is *1*
-    - Run StatefullSet with next resources:
-        - CPU: limit-0.5 request-0.2
-        - Memory: limit-256Mi request-128Mi
-    - Mongo credentials have been gotten from Kubernetes secret mongo
-    - Secret name is *mongo*
-- Deploy presentation layers based on NGINX Ingress:
-    - NGINX Ingress name is *nginx*
-    - Host is `pchaikovskyi.application.com`
-    - Port is *80*
+- **Data Layer**:
+  - Deploy using **StatefulSet**:
+    - **Name**: `mongo`
+    - **Replicas**: 1
+    - Configure resource limits and requests.
+    - Use Kubernetes secret for MongoDB credentials.
 
-### **Check Result:**
-- the application is deployed in *local* Kubernetes
-- the application is accessed through `pchaikovskyi.application.com` URL
+- **Presentation Layer**:
+  - Deploy using **NGINX Ingress**:
+    - **Name**: `nginx`
+    - **Host**: `pchaikovskyi.application.com`
+    - **Port**: 80
 
-![Kubernetes Application](img/running-app.png)
+### **Deployment Verification**
+- Ensure the application is successfully deployed on the local Kubernetes cluster.
+- Verify access to the application via `http://pchaikovskyi.application.com`.
 
-### Used tools: 
-- ####  Docker-Desktop, Docker-Compose, Docker-Hub, Dockerfile
-- ####  Kubernetes : Secrets, ConfigMap, Namespaces, Service, Deployment, Replica Sets, Ingress, StatefulSet, Pods
-- ####  Minikube : Dashboard, Addons
-- ####  VS Code : Terminal
-- ####  Git, GitHub, GitLab
+   ![Running Application](img/running-app.png)
 
+## **Technologies and Tools Used**
+- **Docker**: Docker Desktop, Docker Compose, Docker Hub, Dockerfile
+- **Kubernetes**: Secrets, ConfigMaps, Namespaces, Services, Deployments, ReplicaSets, Ingress, StatefulSets, Pods
+- **Minikube**: Dashboard, Addons
+- **Development Environment**: Visual Studio Code (Terminal)
+- **Version Control**: Git, GitHub, GitLab
