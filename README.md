@@ -16,7 +16,7 @@ The application deployed in 3-tier layers:
   - Application source code is placed in /application directory
   - No Haskell Dockerfile linter errors or warnings
 
-![Docker Compose Application](img/docker-compose-app.png)
+![Kubernetes Application](img/k8s-deployment.png)
 
 #### 2. Create docker-compose.yaml and deploy locally application
 
@@ -26,7 +26,7 @@ The application deployed in 3-tier layers:
 
 #### 3. Preparing Kubernetes manifest **manifest.yml** and deploy it to *local minikube* Kubernetes
 
-![Kubernetes Application](img/k8s-deployment.png)
+![Docker Compose Application](img/docker-compose-app.png)
 
   ##### Kubernetes manifest requirements:
 
