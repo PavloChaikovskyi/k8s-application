@@ -13,20 +13,22 @@ The application deployed in 3-tier layers:
 ### Steps
 
 #### 1. Build Docker image and publish it to private Docker registry ( Docker-Hub )
+![Docker Hub](img/docker-hub.png)
+
+
   - Application source code is placed in /application directory
   - No Haskell Dockerfile linter errors or warnings
 
-![Kubernetes Application](img/k8s-deployment.png)
 
 #### 2. Create docker-compose.yaml and deploy locally application
+![Docker Compose Application](img/docker-compose-app.png)
 
-![Docker Hub](img/docker-hub.png)
   - the application is deployed (we can open it in browser)
   - data can be written to MongoDB on *Test DB Connectivity* page
 
 #### 3. Preparing Kubernetes manifest **manifest.yml** and deploy it to *local minikube* Kubernetes
+![Kubernetes Application](img/k8s-deployment.png)
 
-![Docker Compose Application](img/docker-compose-app.png)
 
   ##### Kubernetes manifest requirements:
 
